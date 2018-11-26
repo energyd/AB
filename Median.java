@@ -31,7 +31,6 @@ public class Median_Double {
   }
   static double precision = 1e-6;
   public static double kthNumber(List<Double> list, double lb, double hb, int k) {
-    System.out.println("lb: " + lb + ", hb: " +hb);
     if (lb - hb > precision || Math.abs(lb - hb) < precision) {
       return lb;
     }
