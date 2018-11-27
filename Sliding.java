@@ -99,6 +99,19 @@ class Solution {
     return false;
   }
   
+  public int[][] shuffle(int m, int n) {
+    int[][] res = new int[m][n];
+    List<Integer> list = new ArrayList<>();
+    for (int i = 0; i < m * n; i++) {
+      list.add(i);
+    }
+    Collections.shuffle(list);
+    for (int i = 0; i < m * n; i++) {
+      res[i / n][i % n] = list.get(i);
+    }
+    return res;
+  }
+  
   public String getTargetStr(int m, int n) {
     StringBuilder sb = new StringBuilder();
     for (int i = 1; i < m * n; i++) {
