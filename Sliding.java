@@ -4,9 +4,16 @@ import java.util.*;
 class Solution {
   
   public static void main(String[] args) {
-    int[][] input = {{1,2,3}, {4,5,6}, {7,8,0}};
+    //int[][] input = {{1,2,3}, {4,5,6}, {7,8,0}};
     Solution sol = new Solution();
-    System.out.println(sol.canSolve(input));
+    int[][] inputRand = sol.shuffle(3, 3);
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        System.out.print(inputRand[i][j] + " ");
+      }
+      System.out.println();
+    }
+    System.out.println(sol.canSolve(inputRand));
   }
   
   public class Status {
@@ -21,35 +28,39 @@ class Solution {
       this.board = board;
       m = board.length;
       n = board[0].length;
-      int[] start = getStartPoint();
-      x = start[0];
-      y = start[1];
+      getStartPoint();
       strBoard = encodeBoard();
     }
     
-    private Status go(int xx, int yy) {
+    private Status go(int xx, int yy, Set<String> visited) {
+      if (xx < 0 || xx >= m || yy < 0 || yy >= n) {
+        return null;
+      }
       int[][] newBoard = new int[m][n];
       for (int i = 0; i < m; i++) {
         newBoard[i] = Arrays.copyOf(board[i], board[i].length);
       }
       newBoard[x][y] = newBoard[xx][yy];
       newBoard[xx][yy] = 0;
-      return new Status(newBoard);
+      Status newSts = new Status(newBoard);
+      if (visited.contains(newSts.strBoard)) {//注意查重不要用老的当前status查
+        return null;
+      }
+      return newSts;
     }
     
-    private int[] getStartPoint() {
+    private void getStartPoint() {
       int m = board.length;
       int n = board[0].length;
       int[] startPoint = new int[2];
       for (int i = 0; i < board.length; i++) {
         for (int j = 0; j < board[0].length; j++) {
           if (board[i][j] == 0) {
-            startPoint[0] = i;
-            startPoint[1] = j;
+            x = i;
+            y = j;
           }
         }
       }
-      return startPoint;
     }
     
     private String encodeBoard() {
@@ -80,6 +91,7 @@ class Solution {
     
     while (!queue.isEmpty()) {
       Status curStatus = queue.poll();
+      System.out.println("Current Board: " + curStatus.strBoard);
       if (curStatus.win(targetStr)) {
         return true;
       }
@@ -87,10 +99,7 @@ class Solution {
       for (int i = 0; i < 4; i++) {
         int xx = curStatus.x + dx[i];
         int yy = curStatus.y + dy[i];
-        Status newStatus = null;
-        if (canGo(curStatus, xx, yy, visited)) {
-          newStatus = curStatus.go(xx, yy);
-        }
+        Status newStatus = newStatus = curStatus.go(xx, yy, visited);//注意这里查重是用新status来查
         if (newStatus != null) {
           queue.offer(newStatus);
         }
@@ -114,17 +123,10 @@ class Solution {
   
   public String getTargetStr(int m, int n) {
     StringBuilder sb = new StringBuilder();
-    for (int i = 1; i < m * n; i++) {
+    for (int i = 1; i < m * n; i++) {//注意不好含m*n
       sb.append(i + ",");
     }
     sb.append(0);
     return sb.toString();
-  }
-  
-  public boolean canGo(Status sts, int xx, int yy, Set<String> visited) {
-    if (xx < 0 || xx >= sts.m || yy < 0 || yy >= sts.n || visited.contains(sts.strBoard)) {
-      return false;
-    }
-    return true;
   }
 }
